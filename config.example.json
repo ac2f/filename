@@ -1,0 +1,26 @@
+{
+  "enabled": true,
+  "watch_folders": [
+    "C:\\Users\\KULLANICI_ADIN\\Downloads"
+  ],
+  "recursive": true,
+  "rename_rules": [
+    {
+      "enabled": true,
+      "match_suffix": ".cdr.zip",
+      "new_suffix": ".cdr"
+    }
+  ],
+  "auto_open": {
+    "cdr": {
+      "enabled": false,
+      "app_path": "C:\\Program Files\\Corel\\CorelDRAW Graphics Suite X7\\Programs64\\CorelDRW.exe"
+    },
+    "pdf": {
+      "enabled": false,
+      "app_path": "C:\\Program Files\\Corel\\CorelDRAW Graphics Suite X7\\Programs64\\CorelDRW.exe"
+    }
+  },
+  "stability_check_seconds": 1.0,
+  "log_file": "cdr_watcher.log"
+}
