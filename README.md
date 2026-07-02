@@ -47,7 +47,10 @@ yapmanıza gerek yoktur.
 Kurulumdan sonra ayar dosyası `%LOCALAPPDATA%\CdrAutoRenamer\config.json`
 konumunda bulunur. Dosyayı Not Defteri ile açıp düzenleyebilir, kaydettiğiniz
 anda uygulama yeni ayarları otomatik olarak algılar (yeniden başlatmaya gerek
-yoktur).
+yoktur). İzlenecek klasörleri (`watch_folders`) değiştirdiğinizde birkaç saniye
+içinde yeni klasör izlenmeye başlar; sistem tepsisinden aktif/deaktif yapmanız
+**gerekmez**. Tepsi menüsünden yapılan aç/kapat işlemleri de `config.json`
+içinde elle yaptığınız düzenlemeleri (örneğin izlenen klasör) bozmaz.
 
 ```json
 {

@@ -20,13 +20,12 @@ def run_tray(config, config_path, log_path):
         icon.title = "CDR Auto Renamer - " + ("Aktif" if config.enabled else "Deaktif")
 
     def toggle_enabled(icon, item):
-        config.enabled = not config.enabled
+        config.toggle_enabled()
         refresh_icon()
 
     def toggle_auto_open(kind):
         def _toggle(icon, item):
-            current = config.auto_open_setting(kind).get("enabled", False)
-            config.set_auto_open_enabled(kind, not current)
+            config.toggle_auto_open(kind)
         return _toggle
 
     def is_enabled(item):

@@ -38,18 +38,17 @@ class Config:
 
     def load(self, create_if_missing=False):
         with self._lock:
-            if not os.path.exists(self.path):
-                if create_if_missing:
-                    self.data = json.loads(json.dumps(DEFAULT_CONFIG))
-                    self._write_locked()
-                return
-            with open(self.path, "r", encoding="utf-8") as f:
-                self.data = json.load(f)
-            self._mtime = os.path.getmtime(self.path)
+            self._load_locked(create_if_missing=create_if_missing)
 
-    def save(self):
-        with self._lock:
-            self._write_locked()
+    def _load_locked(self, create_if_missing=False):
+        if not os.path.exists(self.path):
+            if create_if_missing:
+                self.data = json.loads(json.dumps(DEFAULT_CONFIG))
+                self._write_locked()
+            return
+        with open(self.path, "r", encoding="utf-8") as f:
+            self.data = json.load(f)
+        self._mtime = os.path.getmtime(self.path)
 
     def _write_locked(self):
         tmp_path = self.path + ".tmp"
@@ -58,22 +57,33 @@ class Config:
         os.replace(tmp_path, self.path)
         self._mtime = os.path.getmtime(self.path)
 
+    def update(self, mutate):
+        """Diskteki en guncel ayarlari okur, sadece istenen alani degistirip
+        geri yazar. Boylece kullanicinin config.json uzerinde elle yaptigi
+        degisiklikler (ornegin watch_folders) ust uste yazilarak kaybolmaz."""
+        with self._lock:
+            self._load_locked(create_if_missing=True)
+            mutate(self.data)
+            self._write_locked()
+
     def reload_if_changed(self):
-        try:
-            mtime = os.path.getmtime(self.path)
-        except OSError:
-            return
-        if self._mtime is None or mtime > self._mtime:
-            self.load()
+        with self._lock:
+            try:
+                mtime = os.path.getmtime(self.path)
+            except OSError:
+                return
+            if self._mtime is None or mtime > self._mtime:
+                self._load_locked()
 
     @property
     def enabled(self):
         return bool(self.data.get("enabled", True))
 
-    @enabled.setter
-    def enabled(self, value):
-        self.data["enabled"] = bool(value)
-        self.save()
+    def toggle_enabled(self):
+        def mutate(data):
+            data["enabled"] = not bool(data.get("enabled", True))
+        self.update(mutate)
+        return self.enabled
 
     @property
     def watch_folders(self):
@@ -90,9 +100,12 @@ class Config:
     def auto_open_setting(self, kind):
         return self.data.get("auto_open", {}).get(kind, {"enabled": False, "app_path": ""})
 
-    def set_auto_open_enabled(self, kind, value):
-        self.data.setdefault("auto_open", {}).setdefault(kind, {})["enabled"] = bool(value)
-        self.save()
+    def toggle_auto_open(self, kind):
+        def mutate(data):
+            node = data.setdefault("auto_open", {}).setdefault(kind, {})
+            node["enabled"] = not bool(node.get("enabled", False))
+        self.update(mutate)
+        return bool(self.auto_open_setting(kind).get("enabled", False))
 
     @property
     def stability_check_seconds(self):
