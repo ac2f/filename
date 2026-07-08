@@ -21,6 +21,12 @@
       "app_path": "C:\\Program Files\\Corel\\CorelDRAW Graphics Suite X7\\Programs64\\CorelDRW.exe"
     }
   },
+  "daily_folders": {
+    "enabled": false,
+    "base_dir": "C:\\Users\\KULLANICI_ADIN\\Desktop\\GunlukKlasorler",
+    "date_format": "%d-%m-%Y",
+    "separator": "--"
+  },
   "stability_check_seconds": 1.0,
   "log_file": "cdr_watcher.log"
 }

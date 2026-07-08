@@ -28,6 +28,12 @@ def run_tray(config, config_path, log_path):
             config.toggle_auto_open(kind)
         return _toggle
 
+    def toggle_daily_folders(icon, item):
+        config.toggle_daily_folders()
+
+    def is_daily_folders_enabled(item):
+        return bool(config.daily_folders.get("enabled", False))
+
     def is_enabled(item):
         return config.enabled
 
@@ -57,6 +63,11 @@ def run_tray(config, config_path, log_path):
             "Yeni .pdf dosyalarini Corel ile otomatik ac",
             toggle_auto_open("pdf"),
             checked=is_auto_open_enabled("pdf"),
+        ),
+        pystray.MenuItem(
+            "Gunluk klasor olustur (bugune ozel)",
+            toggle_daily_folders,
+            checked=is_daily_folders_enabled,
         ),
         pystray.MenuItem("Ayarlar Dosyasini Ac (config.json)", open_config),
         pystray.MenuItem("Gunlugu Ac", open_log),

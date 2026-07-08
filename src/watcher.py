@@ -12,10 +12,11 @@ class WatchManager:
     esitler. config.json icindeki watch_folders / recursive degistiginde
     (elle duzenleme ile bile) izleme yeniden baslatilmadan guncellenir."""
 
-    def __init__(self, config, handler, poll_interval=2.0):
+    def __init__(self, config, handler, poll_interval=2.0, extra_tasks=None):
         self.config = config
         self.handler = handler
         self.poll_interval = poll_interval
+        self.extra_tasks = list(extra_tasks or [])
         self.observer = Observer()
         self._watches = {}  # (abspath, recursive) -> watch nesnesi
         self._stop = threading.Event()
@@ -24,8 +25,16 @@ class WatchManager:
     def start(self):
         self.observer.start()
         self.sync()
+        self._run_extra_tasks()
         self._thread = threading.Thread(target=self._poll, name="config-poller", daemon=True)
         self._thread.start()
+
+    def _run_extra_tasks(self):
+        for task in self.extra_tasks:
+            try:
+                task()
+            except Exception as exc:  # noqa: BLE001 - bir gorevin hatasi donguyu durdurmasin
+                logger.error("Periyodik gorev hatasi: %s", exc)
 
     def sync(self):
         recursive = self.config.recursive
@@ -65,6 +74,7 @@ class WatchManager:
         while not self._stop.wait(self.poll_interval):
             self.config.reload_if_changed()
             self.sync()
+            self._run_extra_tasks()
 
     def stop(self):
         self._stop.set()

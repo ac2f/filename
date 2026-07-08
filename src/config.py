@@ -21,6 +21,12 @@ DEFAULT_CONFIG = {
             "app_path": "C:\\Program Files\\Corel\\CorelDRAW Graphics Suite X7\\Programs64\\CorelDRW.exe"
         }
     },
+    "daily_folders": {
+        "enabled": False,
+        "base_dir": os.path.join(os.path.expanduser("~"), "Desktop", "GunlukKlasorler"),
+        "date_format": "%d-%m-%Y",
+        "separator": "--"
+    },
     "stability_check_seconds": 1.0,
     "log_file": "cdr_watcher.log"
 }
@@ -106,6 +112,20 @@ class Config:
             node["enabled"] = not bool(node.get("enabled", False))
         self.update(mutate)
         return bool(self.auto_open_setting(kind).get("enabled", False))
+
+    @property
+    def daily_folders(self):
+        return self.data.get(
+            "daily_folders",
+            {"enabled": False, "base_dir": "", "date_format": "%d-%m-%Y", "separator": "--"},
+        )
+
+    def toggle_daily_folders(self):
+        def mutate(data):
+            node = data.setdefault("daily_folders", {})
+            node["enabled"] = not bool(node.get("enabled", False))
+        self.update(mutate)
+        return bool(self.daily_folders.get("enabled", False))
 
     @property
     def stability_check_seconds(self):

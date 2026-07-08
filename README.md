@@ -9,6 +9,9 @@ gelenleri işler.
 Ek olarak:
 - Yeni eklenen `.cdr` dosyalarını CorelDRAW ile otomatik açma
 - Yeni eklenen `.pdf` dosyalarını CorelDRAW (X7) ile otomatik açma
+- **Günlük klasör oluşturma:** seçtiğiniz bir dizin içinde, her gün o güne
+  gelindiğinde `25-07-2026--cumartesi` gibi (tarih + Türkçe gün adı, ASCII
+  karakterlerle) bir klasör oluşturma
 
 özellikleri de ayarlardan açılıp kapatılabilir.
 
@@ -88,11 +91,34 @@ Alan açıklamaları:
 | `auto_open.cdr.enabled` | Yeni gelen (veya yeniden adlandırılan) `.cdr` dosyalarını otomatik açar/kapatır. |
 | `auto_open.pdf.enabled` | Yeni gelen `.pdf` dosyalarını otomatik açar/kapatır. |
 | `auto_open.*.app_path` | Dosyayı açacak programın tam yolu (varsayılan CorelDRAW X7 yolu; kendi kurulumunuza göre düzeltin). |
+| `daily_folders.enabled` | Günlük klasör oluşturmayı aç/kapat. |
+| `daily_folders.base_dir` | Günlük klasörlerin oluşturulacağı ana dizin. |
+| `daily_folders.date_format` | Klasör adındaki tarih biçimi (Python `strftime`). Varsayılan `%d-%m-%Y` → `08-07-2026`. Nokta isterseniz `%d.%m.%Y` yazın. |
+| `daily_folders.separator` | Tarih ile gün adı arasındaki ayraç (varsayılan `--`). |
 | `stability_check_seconds` | Dosyanın indirmesinin bittiğinden emin olmak için kullanılan bekleme aralığı (saniye). |
 | `log_file` | İşlemlerin kaydedildiği günlük dosyasının adı. |
 
 CorelDRAW farklı bir sürüm/klasörde kuruluysa `app_path` değerlerini kendi
 `CorelDRW.exe` yolunuzla değiştirin.
+
+## Günlük Klasör Oluşturma
+
+Bu özellik açıkken (`daily_folders.enabled: true`), uygulama `base_dir` içinde
+**sadece o güne gelindiğinde** günün klasörünü oluşturur. Gelecekteki günler
+önceden oluşturulmaz. Klasör adı `TARİH{ayraç}gün` biçimindedir, örneğin:
+
+```
+08-07-2026--carsamba
+09-07-2026--persembe
+10-07-2026--cuma
+```
+
+Gün adı, gerçek takvim gününden otomatik hesaplanır ve ASCII karakterlerle
+Türkçe yazılır: `pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar`.
+
+Kontrol, uygulama açılışında ve çalışırken sürekli yapıldığı için, bilgisayar
+gece yarısını geçtiğinde yeni günün klasörü de kendiliğinden oluşur (uygulama
+açıksa). Bugünün klasörü zaten varsa tekrar oluşturulmaz.
 
 ## Sistem Tepsisi Menüsü
 
@@ -101,6 +127,7 @@ Simgeye sağ tıkladığınızda:
 - **Aktif** – uygulamayı tamamen açar/kapatır (yeşil = aktif, gri = deaktif).
 - **Yeni .cdr dosyalarını otomatik aç** – açık/kapalı.
 - **Yeni .pdf dosyalarını Corel ile otomatik aç** – açık/kapalı.
+- **Günlük klasör oluştur (bugüne özel)** – açık/kapalı.
 - **Ayarlar Dosyasını Aç (config.json)** – ayar dosyasını Not Defteri ile açar.
 - **Günlüğü Aç** – işlem geçmişini gösteren log dosyasını açar.
 - **Çıkış** – uygulamayı kapatır (bir sonraki oturum açılışında tekrar

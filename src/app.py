@@ -1,6 +1,7 @@
 import os
 
 from config import Config
+from daily_folder import DailyFolderManager
 from logger_setup import setup_logger
 from renamer import CdrEventHandler
 from tray import run_tray
@@ -16,7 +17,8 @@ def main():
     logger.info("CDR Auto Renamer basliyor")
 
     handler = CdrEventHandler(config)
-    manager = WatchManager(config, handler)
+    daily_folders = DailyFolderManager(config)
+    manager = WatchManager(config, handler, extra_tasks=[daily_folders.tick])
     manager.start()
 
     try:
