@@ -6,6 +6,11 @@ sonra** o klasörlere düşen yeni `.cdr.zip` dosyalarını otomatik olarak `.cd
 uzantısına çevirir. Daha önce indirilmiş dosyalara dokunmaz, sadece yeni
 gelenleri işler.
 
+Aynı adda bir `.cdr` zaten varsa (örneğin aynı dosya ikinci kez geldiyse)
+mevcut dosyanın üzerine yazılmaz; yeni gelen dosyanın adına o günün tarihi
+eklenir: `Xxx.cdr.zip` → `Xxx-12-12-2026.cdr`. Aynı gün o ad da doluysa
+`Xxx-12-12-2026-2.cdr`, `Xxx-12-12-2026-3.cdr` … diye devam eder.
+
 Ek olarak:
 - Yeni eklenen `.cdr` dosyalarını CorelDRAW ile otomatik açma
 - Yeni eklenen `.pdf` dosyalarını CorelDRAW (X7) ile otomatik açma
@@ -87,7 +92,7 @@ Alan açıklamaları:
 | `enabled` | Uygulamanın tamamını aç/kapat (sistem tepsisi menüsündeki "Aktif" ile aynı ayar). |
 | `watch_folders` | İzlenecek klasörlerin listesi. Birden fazla klasör ekleyebilirsiniz, örn. hem WhatsApp klasörü hem Downloads. |
 | `recursive` | `true` ise alt klasörler de izlenir. |
-| `rename_rules` | Hangi uzantının hangisine çevrileceğini tanımlar. `enabled: false` yaparak bu kuralı kapatabilirsiniz. |
+| `rename_rules` | Hangi uzantının hangisine çevrileceğini tanımlar. `enabled: false` yaparak bu kuralı kapatabilirsiniz. Hedef ad doluysa yeni dosyanın adına tarih eklenir (`Xxx-12-12-2026.cdr`). |
 | `auto_open.cdr.enabled` | Yeni gelen (veya yeniden adlandırılan) `.cdr` dosyalarını otomatik açar/kapatır. |
 | `auto_open.pdf.enabled` | Yeni gelen `.pdf` dosyalarını otomatik açar/kapatır. |
 | `auto_open.*.app_path` | Dosyayı açacak programın tam yolu (varsayılan CorelDRAW X7 yolu; kendi kurulumunuza göre düzeltin). |
