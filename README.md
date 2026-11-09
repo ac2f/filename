@@ -33,6 +33,14 @@ simgeye sağ tıklayarak uygulamayı aktif/deaktif yapabilir, otomatik açma
 Python zaten kuruluysa ekstra bir şey yapmanıza gerek yok, kurulum betiği
 gerisini halleder.
 
+Bilgisayarda birden fazla Python kuruluysa kurulum betiği (`find_python.ps1`)
+hepsini tarar (Windows kayıt defteri, `py` başlatıcısı ve PATH) ve **64 bit
+olanlar arasından en güncel sürümü** otomatik seçer; PATH'teki sıraya veya
+silinmiş eski bir Python'dan kalan kayıtlara bakmaz. Daha önce kurulmuş sanal
+ortam (`venv`) silinmiş/farklı bir Python'a bağlıysa kurulum onu otomatik
+olarak yeniden oluşturur. Kurulumun hangi Python'u kullandığı ekranda
+yazdırılır.
+
 ## Tek Tıkla Kurulum
 
 1. Bu klasörü bilgisayarınıza indirin (veya bu depoyu klonlayın).

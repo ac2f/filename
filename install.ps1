@@ -18,24 +18,52 @@ if (-not (Test-Path $ConfigPath)) {
     Write-Host "Mevcut ayar dosyasi korundu: $ConfigPath"
 }
 
-$python = Get-Command python -ErrorAction SilentlyContinue
+. (Join-Path $ScriptDir "find_python.ps1")
+
+# Kurulu Python'lar arasindan en uygununu (64 bit, en guncel surum) sec.
+$python = Find-Python
 if (-not $python) {
-    Write-Error "Python bulunamadi. Lutfen once https://www.python.org/downloads/ adresinden Python 3 kurun (kurulumda 'Add python.exe to PATH' kutusunu isaretleyin), ardindan bu kurulumu tekrar calistirin."
+    Write-Error "Uygun Python bulunamadi (Python $script:MinPythonVersion veya daha yenisi gerekli). Lutfen once https://www.python.org/downloads/ adresinden Python 3 (64 bit) kurun, ardindan bu kurulumu tekrar calistirin."
     exit 1
 }
+Write-Host ("Kullanilacak Python: {0} ({1} bit) -> {2}" -f $python.Version, $python.Bits, $python.Path)
 
 $VenvDir = Join-Path $InstallDir "venv"
-if (-not (Test-Path $VenvDir)) {
-    Write-Host "Sanal ortam olusturuluyor..."
-    & python -m venv $VenvDir
-}
-
 $VenvPython = Join-Path $VenvDir "Scripts\python.exe"
 $VenvPythonw = Join-Path $VenvDir "Scripts\pythonw.exe"
+
+# Daha once olusturulmus sanal ortam silinmis/degismis bir Python'a bagliysa
+# (ornegin kaldirilan eski surum) veya secilen Python'dan farkliysa yeniden olustur.
+if (Test-Path $VenvDir) {
+    $venvInfo = Get-PythonInfo $VenvPython
+    $venvStale = (-not $venvInfo) `
+        -or ($venvInfo.Version.Major -ne $python.Version.Major) `
+        -or ($venvInfo.Version.Minor -ne $python.Version.Minor) `
+        -or ($venvInfo.Bits -ne $python.Bits)
+    if ($venvStale) {
+        Write-Host "Mevcut sanal ortam eski/bozuk bir Python'a bagli, yeniden olusturuluyor..."
+        Get-Process pythonw -ErrorAction SilentlyContinue | Where-Object { $_.Path -like "$InstallDir*" } | Stop-Process -Force -ErrorAction SilentlyContinue
+        Start-Sleep -Milliseconds 500
+        Remove-Item $VenvDir -Recurse -Force
+    }
+}
+
+if (-not (Test-Path $VenvDir)) {
+    Write-Host "Sanal ortam olusturuluyor..."
+    & $python.Path -m venv $VenvDir
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Sanal ortam olusturulamadi."
+        exit 1
+    }
+}
 
 Write-Host "Gerekli paketler kuruluyor..."
 & $VenvPython -m pip install --upgrade pip | Out-Null
 & $VenvPython -m pip install -r (Join-Path $InstallDir "requirements.txt")
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Gerekli paketler kurulamadi."
+    exit 1
+}
 
 $StartupDir = [Environment]::GetFolderPath("Startup")
 $ShortcutPath = Join-Path $StartupDir "CdrAutoRenamer.lnk"
